@@ -1,40 +1,49 @@
-n, m = [int(e) for e in input().split()]
-lgi = [[int(e) for e in input().split()] for _ in range(0, m)]
+from heapq import heapify, heappush, heappop
 
-lg = [list() for _ in range(0, n)]
-for e in lgi:
-    u, v, w = e
-    lg[u - 1].append([v - 1, w])
-    lg[v - 1].append([u - 1, w])
-
-
-def dijkstra_memo(d, memo):
-    memo[d] = 0
-    pile = [
-        [d, 0]
-    ]
-    while len(pile) > 0:
-        # print(pile)
-        cd, cw = pile.pop(-1)
-
-        for dst in lg[cd]:
-            fd, fw = dst
-            nw = cw + fw
-            if memo[fd] >= nw:
-                memo[fd] = nw
-                pile.append([fd, nw])
-        pile.sort(key=lambda e: -e[1])
+n_v, n_e = map(int, input().split())
+g = {node: {} for node in range(n_v)}
+for _ in range(n_e):
+    u_, v_, w_ = map(int, input().split())
+    g[u_ - 1][v_ - 1] = w_
+    g[v_ - 1][u_ - 1] = w_
 
 
-memo = [float('inf') for x in range(0, n)]
-memo_test = [[float('inf') for x in range(0, n)] for _ in range(0, n)]
-sm = 0
-for dd in range(0, n):
-    for i in range(0, n):
-        memo[i] = float('inf')
-    dijkstra_memo(dd, memo)
-    for e in memo:
-        if e != float('inf'):
-            sm += e
+def bfs(src):
+    to_explore = {src}
+    explored = set()
+    while to_explore:
+        to_explore_ = set()
+        for u in to_explore:
+            explored.add(u)
+            if u in vertices:
+                vertices.remove(u)
+            for v in g[u]:
+                if v not in explored:
+                    to_explore_.add(v)
+        to_explore = to_explore_
+    return explored
 
-print(sm)
+
+def dijkstra(src, vs):
+    d = {node: float('inf') if node != src else 0 for node in vs}
+    q = [(dist, node) for node, dist in d.items()]
+    heapify(q)
+    explored = set()
+    while len(explored) != len(vs):
+        u = heappop(q)[1]
+        explored.add(u)
+        for v, w in g[u].items():
+            if v not in explored:
+                if d[v] > d[u] + w:
+                    d[v] = d[u] + w
+                    heappush(q, (d[v], v))
+    return d
+
+
+total = 0
+vertices = set(range(n_v))
+while vertices:
+    nodes = bfs(next(iter(vertices)))
+    for node in nodes:
+        total += sum(dijkstra(node, nodes).values())
+print(total)
