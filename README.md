@@ -1,6 +1,4 @@
-# prologin-train
-
-Feel free to contribute :) !
+# Feel free to contribute !
 
 #### 2020
 |       |    1  |    2  |    3  |    4  |    5  |
