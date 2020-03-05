@@ -1,3 +1,4 @@
+n = int(input())
 tot = 0
 for _ in range(0, 5):
     l = input()
