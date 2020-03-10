@@ -1,7 +1,7 @@
 # https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/
 # https://www.geeksforgeeks.org/knapsack-with-large-weights/
 
-input()
+nba = int(input())
 ca = int(input())
 
 
@@ -45,25 +45,33 @@ def get_wt_val():
 
 
 wt, val = get_wt_val()
+n = len(wt)
 
-K = [[None for _ in range(ca + 1)] for _ in range(len(wt) + 1)]
+dp = [[None for _ in range(n)]
+      for _ in range(ca + 1)]
 
 
-def knapSack(c, n):
-    if n <= 0 or c <= 0:
+def solveDp(r, i):
+    if r <= 0:
         return 0
-    if K[n][c] is not None:
-        return K[n][c]
+    if i == n:
+        return float('inf')
+    if dp[r][i] is not None:
+        return dp[r][i]
 
-    res = knapSack(c, n - 1)
-
-    if wt[n - 1] <= c:
-        res = max(
-            val[n - 1] + knapSack(c - wt[n - 1], n - 1),
-            res
-        )
-    K[n][c] = res
-    return res
+    dp[r][i] = min(
+        solveDp(r, i + 1),
+        wt[i] + solveDp(r - val[i], i + 1)
+    )
+    return dp[r][i]
 
 
-print(knapSack(ca, len(wt)))
+def maxWeight():
+    for i in range(ca, -1, -1):
+        if solveDp(i, 0) <= ca:
+            return i
+
+    return 0
+
+
+print(maxWeight())
