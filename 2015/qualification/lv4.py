@@ -12,14 +12,14 @@ for _ in range(0, m):
 
 def dji(d):
     pile = [
-        (d, 0)
+        (0, d)
     ]
     while len(pile) > 0:
-        p, h = heapq.heappop(pile)
+        h, p = heapq.heappop(pile)
         for (dd, t) in lg[p]:
             if MA[d][dd] > h + t:
                 MA[d][dd] = h + t
-                heapq.heappush(pile, (dd, h + t))
+                heapq.heappush(pile, (h + t, dd))
 
 
 for _ in range(0, r):
