@@ -1,62 +1,29 @@
-#!/usr/bin/env python3
+import heapq
 
-def cherche(lEmp, dep):
-    lDepTime = list(lEmp[1][dep])
-    while False in lEmp[2][dep]:
-        idMin = lDepTime.index(min(lDepTime))
-        for dest in lEmp[0][idMin]:
-            if not lEmp[2][dep][dest[0]]:
-                lEmp[1][dep][dest[0]] = min(dest[1] + lEmp[1][dep][idMin], lEmp[1][dep][dest[0]])
-                lDepTime[dest[0]] = min(dest[1] + lEmp[1][dep][idMin], lEmp[1][dep][dest[0]])
-        lDepTime[idMin] = float("infinity")
-        lEmp[2][dep][idMin] = True
+n, m, r = [int(e) for e in input().split()]
+lg = []
+MA = [[float('inf') if i != j else 0 for i in range(0, n)] for j in range(0, n)]
+
+lg = [[] for _ in range(0, n)]
+for _ in range(0, m):
+    d, a, t = [int(e) for e in input().split()]
+    lg[d - 1].append((a - 1, t))
 
 
-def expert_itinerant(n, m, r, lD, lA, lT, ld, la):
-    lEmp, lLigng, lLignd = [[], [], []], [], []
-    for x in range(0, n):
-        lLigng.append(False)
-        lLignd.append(float("infinity"))
-    for x in range(0, n):
-        lEmp[0].append([])
-        lEmp[1].append(list(lLignd))
-        lEmp[2].append(list(lLigng))
-    for y in range(0, m):
-        lEmp[0][lD[y]].append([lA[y], lT[y]])
-
-    # for dep in range(0,n):
-    #	lEmp[1][dep][dep]=0
-    #	lEmp[2][dep][dep]=True
-    #	cherche(lEmp,dep)
-
-    for r in range(0, r):
-        if lEmp[2][ld[r]][la[r]]:
-            print(lEmp[1][ld[r]][la[r]])
-        else:
-            dep = ld[r]
-            lEmp[1][dep][dep] = 0
-            lEmp[2][dep][dep] = True
-            cherche(lEmp, dep)
-            print(lEmp[1][ld[r]][la[r]])
+def dji(d):
+    pile = [
+        (d, 0)
+    ]
+    while len(pile) > 0:
+        p, h = heapq.heappop(pile)
+        for (dd, t) in lg[p]:
+            if MA[d][dd] > h + t:
+                MA[d][dd] = h + t
+                heapq.heappush(pile, (dd, h + t))
 
 
-if __name__ == '__main__':
-    n, m, r = (int(i) for i in input().split())
-
-    lD = []
-    lA = []
-    lT = []
-    for _ in range(m):
-        my_lD, my_lA, my_lT = (int(i) for i in input().split())
-        lD.append(my_lD - 1)
-        lA.append(my_lA - 1)
-        lT.append(my_lT)
-
-    ld = []
-    la = []
-    for _ in range(r):
-        my_d, my_a = (int(i) for i in input().split())
-        ld.append(my_d - 1)
-        la.append(my_a - 1)
-
-    expert_itinerant(n, m, r, lD, lA, lT, ld, la)
+for _ in range(0, r):
+    d, a = (int(e) for e in input().split())
+    if MA[d - 1][a - 1] == float('inf'):
+        dji(d - 1)
+    print(MA[d - 1][a - 1])
