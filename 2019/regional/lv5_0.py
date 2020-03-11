@@ -1,7 +1,9 @@
 # https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/
 # https://www.geeksforgeeks.org/knapsack-with-large-weights/
 
-nba = int(input())
+from functools import lru_cache
+
+input()
 ca = int(input())
 
 
@@ -45,33 +47,48 @@ def get_wt_val():
 
 
 wt, val = get_wt_val()
-n = len(wt)
 
-dp = [[None for _ in range(n)]
-      for _ in range(ca + 1)]
+K = [[] for _ in range(len(wt) + 1)]
 
 
-def solveDp(r, i):
-    if r <= 0:
+def get_h(c, lh):
+    if len(lh) == 0 or c < lh[0][0] or c > lh[-1][0]:
+        return None
+    iff = 0
+    isup = len(lh) - 1
+    while isup - iff > 1:
+        mid = (iff + isup) // 2
+        if lh[mid][0] == c:
+            return lh[mid][1]
+        if lh[mid][0] < c:
+            iff = mid
+        else:
+            isup = mid
+    if lh[iff][0] == c:
+        return lh[iff][1]
+    if lh[isup][0] == c:
+        return lh[isup][1]
+
+    return None
+
+
+def knapSack(c, n):
+    if n <= 0 or c <= 0:
         return 0
-    if i == n:
-        return float('inf')
-    if dp[r][i] is not None:
-        return dp[r][i]
+    res = get_h(c, K[n])
+    if res is not None:
+        return res
 
-    dp[r][i] = min(
-        solveDp(r, i + 1),
-        wt[i] + solveDp(r - val[i], i + 1)
-    )
-    return dp[r][i]
+    res = knapSack(c, n - 1)
 
-
-def maxWeight():
-    for i in range(ca, -1, -1):
-        if solveDp(i, 0) <= ca:
-            return i
-
-    return 0
+    if wt[n - 1] <= c:
+        res = max(
+            val[n - 1] + knapSack(c - wt[n - 1], n - 1),
+            res
+        )
+    K[n].append((c, res))
+    K[n].sort()
+    return res
 
 
-print(maxWeight())
+print(knapSack(ca, len(wt)))
