@@ -29,7 +29,7 @@ while len(lg2) > 0:
         si.add(i)
         ss = s
 
-    lg2 = list(map(lambda e: (e[0], e[1] - ss), filter(lambda e: e[0] not in si and len(si & e[1]) == 0, lg2)))
+    lg2 = [(i, ds - ss) for (i, ds) in lg2 if i not in si and len(si & ds) == 0]
 
     tot += len(si)
 
